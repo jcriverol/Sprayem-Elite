@@ -1,1 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprayem Elite</title>
+  <style>
+    body { font-family: Arial; background:#0b1220; color:white; padding:20px; }
+    input, select { width:100%; padding:10px; margin:8px 0; border-radius:8px; border:none; }
+    button { width:100%; padding:14px; background:#00ff88; border:none; border-radius:10px; font-size:16px; }
+    .card { background:#111a2e; padding:15px; border-radius:12px; margin-top:15px; }
+  </style>
+</head>
 
+<body>
+
+<h2>Sprayem Elite Quote</h2>
+
+<div class="card">
+
+<label>Cubic Feet</label>
+<input id="cf" type="number" placeholder="Enter cubic feet">
+
+<label>Foundation</label>
+<select id="type">
+  <option value="slab">Slab</option>
+  <option value="crawl">Crawl</option>
+</select>
+
+<label>Prep Level</label>
+<select id="prep">
+  <option value="0">No Prep</option>
+  <option value="250">Basic ($250)</option>
+  <option value="350">Moderate ($350)</option>
+  <option value="500">Heavy ($500+)</option>
+</select>
+
+<label>Roof Type</label>
+<select id="roof">
+  <option value="0">Normal</option>
+  <option value="250">Aluminum (+$250)</option>
+</select>
+
+<label>2nd Story?</label>
+<select id="story">
+  <option value="0">No</option>
+  <option value="50">Yes (+$50)</option>
+</select>
+
+<label>Discount</label>
+<select id="discount">
+  <option value="0">None</option>
+  <option value="5">First Responder</option>
+  <option value="5">Military</option>
+  <option value="5">Teacher</option>
+  <option value="5">Senior</option>
+</select>
+
+<label>Manual Price Override ($)</label>
+<input id="override" type="number" placeholder="Optional">
+
+<button onclick="calculate()">Generate Quote</button>
+
+</div>
+
+<div class="card">
+<h3 id="result">$0</h3>
+</div>
+
+<script>
+
+function calculate(){
+
+let cf = parseInt(document.getElementById("cf").value || 0);
+
+// rounding rule
+cf = Math.round(cf / 1000) * 1000;
+
+// base pricing
+let base = 0;
+
+if(cf <= 20400){
+  base = (document.getElementById("type").value === "slab") ? 1590 : 1798;
+} else {
+  base = cf * 0.08; // fallback scaling
+}
+
+// SELL PRICE = DOUBLE
+let price = base * 2;
+
+// add-ons
+price += parseInt(document.getElementById("prep").value);
+price += parseInt(document.getElementById("roof").value);
+price += parseInt(document.getElementById("story").value);
+
+// discount capped at $100
+let discountPercent = parseInt(document.getElementById("discount").value);
+let discountAmount = Math.min((price * (discountPercent/100)), 100);
+
+price -= discountAmount;
+
+// override
+let override = parseInt(document.getElementById("override").value);
+if(override > 0){
+  price = override;
+}
+
+document.getElementById("result").innerHTML = "$" + Math.round(price);
+
+}
+
+</script>
+
+</body>
+</html>
